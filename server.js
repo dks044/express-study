@@ -27,10 +27,12 @@ const manualSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
     order: { type: Number, required: true, unique: true },
+    createDate: Date,
     thumbnailPath: { type: String },
 });
 
 const Manual = mongoose.model('Manual', manualSchema);
+
 const fs = require('fs').promises;
 
 
@@ -60,7 +62,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
 
 // 메뉴얼 생성 라우트
 app.post('/oe_manuals', upload.single('thumbnail'), async (req, res) => {
-    const { videoLink, title, description, order } = req.body;
+    const { videoLink, title, description, order,createDate } = req.body;
     const thumbnail = req.file;
 
     // 필수 데이터 검증
@@ -81,6 +83,7 @@ app.post('/oe_manuals', upload.single('thumbnail'), async (req, res) => {
             title,
             description,
             order: parseInt(order),
+            createDate: new Date(createDate), // 서버에서 직접 설정
             //thumbnail: thumbnail.originalname,  // 원래 파일 이름 저장
             thumbnailPath: thumbnail ? `/uploads/${thumbnail.originalname}` : null,
         });
